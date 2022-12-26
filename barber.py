@@ -1,11 +1,11 @@
 from time import sleep
 from random import randint, choice
 from multiprocessing import Process, Queue, Event
-
+#нудно посмотреть там где ошибка, что очередь никогда не переполняется 
 HAIRCUT = ['стрижку машинкой 1-2 насадки', 'стрижку модельную', 'стрижку фейд', 'стрижку кроп', 'стрижку андеркат', 'стрижку площадку']
 NAME = ['Алексей', 'Кирилл', 'Витя', 'Максим228', 'Денис', 'Илья', 'Арсений', 'Никита']
 QUEUE = 1
-CUSTOMER_TIME  = (1, 2)
+CUSTOMER_TIME  = 1, 2
 WAIT = 20
 
 class Customer:
@@ -13,7 +13,7 @@ class Customer:
         self.name, self.trim = name, trim
 
 class Barber:
-    WORK_TIME = 10, 20
+    WORK_TIME = 7, 8
     def __init__(self, haircut):
         self.haircut = haircut
         self.customer_arrived = Event()
@@ -36,7 +36,7 @@ class Barbershop:
         self.haircut, self.queue = haircut, queue
         self.worker = Barber(haircut)
         self.process = Process(target=self.work)
-        self.que = Queue()
+        self.que = Queue(QUEUE)
 
     def open(self):
         print(f'Салон открывается с {self.queue} местами в очереди')
@@ -58,8 +58,8 @@ class Barbershop:
 
     def visit(self, customer: Customer):
         print(f'{customer.name} зашел в салон и ищет место в записи')
-        if not self.que.full():
-                print(f'Зал ожидания заполнен, {customer.name} уходит')
+        if self.que.full():
+            print(f'Зал ожидания заполнен, {customer.name} уходит')
         else:        
             print(f'{customer.name} выбрал {customer.trim}')
             self.que.put(customer) #входит в очередь
